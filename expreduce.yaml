@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expreduce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expreduce
+  template:
+    metadata:
+      labels:
+        app: expreduce
+    spec:
+      containers:
+      - image: ubuntu
+        name: expreduce
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update; apt install -y figlet curl
+          curl -sL https://github.com/corywalker/expreduce/releases/download/0.5/expreduce_0.5_linux_amd64.tar.gz | tar -C /bin/ -xvz expreduce
+          curl -sL https://get.k0s.io/install.sh | sh
+          ~/.k0s/bin/k0s agent -tags 'Expreduce' -name expreduce -cmd "while :; do figlet expreduce; expreduce; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

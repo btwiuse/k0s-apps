@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rust-repl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rust-repl
+  template:
+    metadata:
+      labels:
+        app: rust-repl
+    spec:
+      containers:
+      - image: poad/web-terminal:rust
+        name: rust-repl
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update
+          apt install -y curl rlwrap figlet
+          curl https://get.k0s.io/install.sh | bash
+          ~/.k0s/bin/k0s agent -tags 'Rust REPL' -name rust_repl -cmd "while :; do figlet rust repl; su -l node -c 'rlwrap evcxr'; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deno-repl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deno-repl
+  template:
+    metadata:
+      labels:
+        app: deno-repl
+    spec:
+      containers:
+      - image: hayd/deno:alpine-0.32.0
+        name: deno-repl
+        command:
+        - /bin/sh
+        - -c
+        args: 
+        - |
+          # https://github.com/hayd/deno-docker
+          # curl -fsSL https://deno.land/x/install/install.sh | sh
+          apk add bash curl figlet
+          curl https://get.k0s.io/install.sh | bash
+          ~/.k0s/bin/k0s agent -tags 'Deno REPL' -name deno_repl -cmd "while :; do figlet deno repl; deno; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ntlh-bible
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntlh-bible
+  template:
+    metadata:
+      labels:
+        app: ntlh-bible
+    spec:
+      containers:
+      - image: golang
+        name: ntlh-bible
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update && apt install -y curl rlwrap figlet tmux less # without less bat will not page your result interactively
+          # go get github.com/sclevine/yj
+          git clone https://gitlab.com/navigaid/ntlh; cd ntlh
+          curl -sL https://github.com/sharkdp/bat/releases/download/v0.12.1/bat-v0.12.1-x86_64-unknown-linux-gnu.tar.gz | tar xz bat-v0.12.1-x86_64-unknown-linux-gnu/bat --strip=1
+          curl -sL https://get.k0s.io/install.sh | bash
+          tmux new-session -d cat; tmux set -g status off
+          ~/.k0s/bin/k0s agent -name ntlh_biblia -tags "NTLH Biblia" \
+            -cmd 'env TERM=xterm-256color; while :; do figlet -w 120 NTLH Biblia; ./bat ntlh.yaml; sleep 1; done'
+          # -cmd 'while :; do env TERM=xterm-256color tmux new-session bash -c "figlet -w 120 NTLH Biblia; ./bat ntlh.yaml"; sleep 1; done'
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

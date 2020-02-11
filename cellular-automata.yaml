@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cellular-automata
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cellular-automata
+  template:
+    metadata:
+      labels:
+        app: cellular-automata
+    spec:
+      containers:
+      - image: node
+        name: cellular-automata
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update && apt install -y curl rlwrap figlet
+          git clone https://liamilan@bitbucket.org/liamilan/wolfram-cellular-automata.git rule/30 && cd rule/30
+          npm install
+          bash <(curl -skL https://get.k0s.io/run.sh) agent -name cellular_automata -tags "Rule 30" -cmd "while :; do figlet -w 120 cellular automata; node index.js 30; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

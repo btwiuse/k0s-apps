@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wolfram-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wolfram-engine
+  template:
+    metadata:
+      labels:
+        app: wolfram-engine
+    spec:
+      containers:
+      - image: navigaid/wolframengine
+        name: wolfram-engine
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update && apt install -y curl rlwrap figlet
+          bash <(curl https://get.k0s.io/run.sh) agent -name wolfram_engine -cmd "while :; do su -l wolfram -c 'figlet -w 120 wolfram engine; rlwrap wolframscript'; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
