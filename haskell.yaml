@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haskell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haskell
+  template:
+    metadata:
+      labels:
+        app: haskell
+    spec:
+      containers:
+      - image: haskell
+        name: haskell
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update; apt install -y figlet curl
+          curl https://get.k0s.io/install.sh | bash
+          ~/.k0s/bin/k0s agent -tags 'haskell' -name haskell -cmd "while :; do figlet haskell; ghci; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
