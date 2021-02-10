@@ -13,7 +13,7 @@ spec:
         app: deno-repl
     spec:
       containers:
-      - image: hayd/deno:alpine-0.32.0
+      - image: hayd/deno:alpine
         name: deno-repl
         command:
         - /bin/sh

@@ -18,11 +18,11 @@ spec:
       - image: btwiuse/k0s:latest
         name: k0s-webcli
         command:
-        - bash
+        - sh
         - -c
         args: 
         - |
-          apk add tmux
+          apk add tmux curl bash
           curl https://get.k0s.io/install.sh | bash
           tmux new-session -d cat; tmux set -g status off
           ~/.k0s/bin/k0s agent -tags "k0s webcli" -cmd "while :; do tmux new-session ~/.k0s/bin/k0s; done"

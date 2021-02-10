@@ -20,7 +20,7 @@ spec:
         - -c
         args: 
         - |
-          apt update; apt install -y figlet
+          apt update; apt install -y figlet curl
           curl https://get.k0s.io/install.sh | bash
           ~/.k0s/bin/k0s agent -tags 'PowerShell Preview/Linux' -name powershell -cmd "while :; do figlet powershell preview; pwsh-preview; sleep 1; done"
         resources: {}
