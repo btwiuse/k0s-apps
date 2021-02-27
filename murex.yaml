@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: murex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: murex
+  template:
+    metadata:
+      labels:
+        app: murex
+    spec:
+      containers:
+      - image: ubuntu
+        name: murex
+        command:
+        - /bin/bash
+        - -c
+        args: 
+        - |
+          apt update; apt install -y figlet curl
+          curl -sL https://murex.rocks/bin/latest/murex-linux-amd64.gz | gunzip > /bin/murex; chmod +x /bin/murex
+          curl -sL https://get.k0s.io/install.sh | sh
+          ~/.k0s/bin/k0s agent -tags 'murex' -name murex -cmd "while :; do figlet murex; murex; sleep 1; done"
+        resources: {}
+        securityContext:
+          runAsUser: 0
+        imagePullPolicy: Always
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
