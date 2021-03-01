@@ -17,18 +17,19 @@ spec:
       hostPID: true
       hostIPC: true
       containers:
-      - image: ubuntu
+      - image: btwiuse/k0s
         name: node-agent
         command: 
-        - /bin/bash
+        - /bin/sh
         - -c
         args: 
         - |
           cat <<EOF >> /chroot/home/civo-kubernetes/.ssh/authorized_keys && echo done || echo failed
           ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDX5+yq0TQrW6lxsx0hcT+93A4K0QZ92UWM0BY0cc8ahyIey9/biN54at0xSSnu351ltJJdcp3O5XYs4qwCMiRBL+4YiNod0GF7hUb9yvQh6+SeiKy5y+0ChipUTXo3hK2wZ7plq6rI9JUu63E8TDWWG2Miy0dpn7YrCe2h27Jb7SZ9cc6df9JLXhXBcleHFrY0MDPGWfaMD2jnXGQFfyiFFyH/PlL3Ztu2BghozbZUlq7n4y8QpLcyko4n8OhtupIuQ4NHF4bKxwNrVdhLmG24IqLTTRIyUkHEJvwCENmP2kNy3NkNw+pdhJzG/e8DrG30HKat7flyFZp8TDEluVwB x220
           EOF
-          apt update && apt install -y figlet curl
-          bash <(curl https://get.k0s.io/run.sh) agent -tags "civo cloud,#kube100beta,k3s,$(curl ip.sb)" -name "$(hostname)" -cmd "while :; do figlet -w 120 $(hostname); chroot /chroot bash; sleep 1; done"
+          # apt update && apt install -y figlet curl
+          # bash <(curl https://get.k0s.io/run.sh) agent -tags "civo cloud,#kube100beta,k3s,$(curl ip.sb)" -name "$(hostname)" -cmd "while :; do figlet -w 120 $(hostname); chroot /chroot bash; sleep 1; done"
+          k0s agent -tags "civo cloud,#kube100beta,k3s,$(curl ip.sb)" -name "$(hostname)" -cmd "while :; do chroot /chroot bash; sleep 1; done"
         securityContext:
           runAsUser: 0
         volumeMounts:
